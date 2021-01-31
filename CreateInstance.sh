@@ -16,7 +16,7 @@ set -o nounset
 IMG_URL=https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
 IMG_PATH=/var/lib/libvirt/images/focal-server-cloudimg-amd64.img
 # VM Instance
-VM_NAME=Ubuntu204
+VM_NAME=docker
 DISK_SIZE=10G
 VNC_PORT=5906
 
