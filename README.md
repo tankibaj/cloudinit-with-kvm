@@ -12,7 +12,7 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
 
 
 
-### Getting Started
+### Getting started
 
 - ###### Update and install cloud image utils
 
