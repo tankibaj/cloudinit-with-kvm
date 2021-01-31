@@ -70,3 +70,10 @@ write_files:
 
 # |- Output final message when cloud-init has finished
 final_message: "The system is finally up, after $UPTIME seconds"
+
+# |-  Shutdown/reboot after all config modules have been run
+power_state:
+    delay: now
+    mode: reboot
+    message: First reboot
+    condition: true
