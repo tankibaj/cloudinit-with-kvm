@@ -32,10 +32,16 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
   nano network-config.yml
   ```
 
-- ###### Spin up VM
+- ###### Spin up Ubuntu 20.04 VM
 
   ```bash
-  bash CreateInstance.sh instance1 ubuntu 20 5902
+  bash CreateInstance.sh ubuntu-instance ubuntu 20 5902
+  ```
+  
+  - ###### Spin up Debian 10 VM
+
+  ```bash
+  bash CreateInstance.sh debian-instance debian 20 5903
   ```
 
  
