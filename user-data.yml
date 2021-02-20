@@ -7,7 +7,7 @@ timezone: Europe/Berlin
 manage_etc_hosts: true
 
 # |- Update hostname and fqdn
-hostname: ubuntu-cloudinit
+hostname: cloudinit
 #fqdn: web01.example.com
 
 # |- Configure apt for the user
