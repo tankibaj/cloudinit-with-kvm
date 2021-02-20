@@ -7,7 +7,7 @@ timezone: Europe/Berlin
 manage_etc_hosts: true
 
 # |- Update hostname and fqdn
-hostname: docker
+hostname: ubuntu-cloudinit
 #fqdn: web01.example.com
 
 # |- Configure apt for the user
@@ -20,13 +20,14 @@ package_update: true
 
 # |- Upgrade the instance on first boot | Default: false
 #apt_upgrade: true
-package_upgrade: true
+package_upgrade: false
 
 # |- Install additioanl packages on first boot | Default: non
 packages:
     - htop
     - git
     - curl
+    - unzip
 
 # |- Can easily be imported into the configured user. This can be a single string ('user') or a list ([user1, user2])
 # ssh_import_id: [user1, user2]
@@ -52,9 +53,6 @@ runcmd:
   - sed -i -e '$aAllowUsers naim' /etc/ssh/sshd_config
   - restart ssh
   - [ wget, "https://raw.githubusercontent.com/tankibaj/dotfiles-ubuntu/master/install.sh", -O, /home/naim/dotfiles-installer.sh ]
-  - [ sh, -c, 'curl -sSL https://get.docker.com/ | sh' ]
-  - [ sh, -c, 'sudo curl -L https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep "tag_name" | cut -d \" -f4)/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose' ]
-  - [ sh, -c, 'sudo chmod +x /usr/local/bin/docker-compose' ]
 
 # |- Set user passwords
 chpasswd:

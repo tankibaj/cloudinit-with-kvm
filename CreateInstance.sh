@@ -5,24 +5,47 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-# # Debug
-# cat /tmp/doesnotexist && rc=$? || rc=$?
-# echo exitcode: $rc
-# cat /dev/null && rc=$? || rc=$?
-# echo exitcode: $rc
+# Check for arguments
+if [ $# = 4 ]; then
+    VM_NAME=$1
+    os=$2
+    DISK_SIZE=$3G
+    VNC_PORT=$4
+else
+    echo
+    echo "Usage: $0 VMname OSname DiskSize VNCPort"
+    echo
+    echo "Example: bash $0 instance1 ubuntu 20 5901"
+    exit 1
+fi
 
+# Check port availability
+if [[ "$VNC_PORT" = "$(sudo netstat -tulpn | grep $VNC_PORT | awk '{ print $4}' | cut -d ":" -f 2)" ]]; then
+    echo "$VNC_PORT is already used"
+    exit 1
+fi
 
-# Baking cloud image
-IMG_URL=https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
-IMG_PATH=/var/lib/libvirt/images/focal-server-cloudimg-amd64.img
-# VM Instance
-VM_NAME=docker
-DISK_SIZE=10G
-VNC_PORT=5906
-
+if [ -n $os ]; then
+    case $os in
+    ubuntu | Ubuntu)
+        # IMG_URL=https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img
+        # IMG_PATH=/var/lib/libvirt/images/bionic-server-cloudimg-amd64.img
+        IMG_URL=https://cloud-images.ubuntu.com/bionic/current/focal-server-cloudimg-amd64.img
+        IMG_PATH=/var/lib/libvirt/images/focal-server-cloudimg-amd64.img
+        ;;
+    debian | Debian)
+        IMG_URL=http://cdimage.debian.org/cdimage/openstack/current/debian-10-openstack-amd64.qcow2
+        IMG_PATH=/var/lib/libvirt/images/debian-10-openstack-amd64.qcow2
+        ;;
+    *)
+        echo "$os is not supported"
+        exit 1
+        ;;
+    esac
+fi
 
 if [ ! -e ${IMG_PATH} ]; then
-    sudo curl --output  ${IMG_PATH} ${IMG_URL}
+    sudo curl --output ${IMG_PATH} ${IMG_URL}
 fi
 
 if [ -e ${VM_NAME}.xml ]; then
@@ -41,10 +64,25 @@ if [ -e /var/lib/libvirt/images/${VM_NAME}-seed.qcow2 ]; then
     rm -rfv /var/lib/libvirt/images/${VM_NAME}-seed.qcow2
 fi
 
-# Create disk image
-qemu-img create -F qcow2 -b ${IMG_PATH} -f qcow2 /var/lib/libvirt/images/${VM_NAME}.qcow2 ${DISK_SIZE}
+
+if [ ! "qcow2" = $(qemu-img info ${IMG_PATH} | grep 'file format' | cut -d ':' -f 2) ]; then
+echo "Image format is not supported!"
+fi
+
+
+# # Create disk image
+# qemu-img create -F qcow2 -b ${IMG_PATH} -f qcow2 /var/lib/libvirt/images/${VM_NAME}.qcow2 ${DISK_SIZE}
+
+# Copy master disk and convert to qcow2 | Even through its a qcow2 image , still copy and ensures target file is qcow2
+qemu-img convert -f qcow2 ${IMG_PATH} -O qcow2 /var/lib/libvirt/images/${VM_NAME}.qcow2
+# cp -v ${IMG_PATH} /var/lib/libvirt/images/${VM_NAME}.qcow2
+
+# Resize virtual disk
+qemu-img resize /var/lib/libvirt/images/${VM_NAME}.qcow2 ${DISK_SIZE}
+
 # Create seed image and injecting network-config, user-data and meta-data
 cloud-localds -v -N network-config.yml /var/lib/libvirt/images/${VM_NAME}-seed.qcow2 user-data.yml
+
 
 cat >${VM_NAME}.xml <<EOF
 <domain type='kvm'>
