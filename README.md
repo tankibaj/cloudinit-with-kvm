@@ -32,7 +32,7 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
   nano network-config.yml
   ```
 
-- ###### spin up VM
+- ###### Spin up VM
 
   ```bash
   bash CreateInstance.sh instance1 ubuntu 20 5902
