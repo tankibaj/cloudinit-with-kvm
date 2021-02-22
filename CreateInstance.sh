@@ -30,7 +30,7 @@ if [ -n $os ]; then
     ubuntu | Ubuntu)
         # IMG_URL=https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img
         # IMG_PATH=/var/lib/libvirt/images/bionic-server-cloudimg-amd64.img
-        IMG_URL=https://cloud-images.ubuntu.com/bionic/current/focal-server-cloudimg-amd64.img
+        IMG_URL=https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
         IMG_PATH=/var/lib/libvirt/images/focal-server-cloudimg-amd64.img
         ;;
     debian | Debian)
