@@ -19,6 +19,11 @@ else
     exit 1
 fi
 
+# Check for cloud-image-utils and install if don't have it
+if test ! $(which cloud-localds); then
+    sudo apt-get -y install cloud-image-utils
+fi
+
 # Check port availability
 if [[ "$VNC_PORT" = "$(sudo netstat -tulpn | grep $VNC_PORT | awk '{ print $4}' | cut -d ":" -f 2)" ]]; then
     echo "$VNC_PORT is already used"
