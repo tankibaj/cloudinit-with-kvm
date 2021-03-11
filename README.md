@@ -2,13 +2,13 @@
 
 Spin up a virtual machine instance in a few seconds with [cloud image](https://cloud-images.ubuntu.com/) and [cloud-init](https://cloudinit.readthedocs.io/en/latest/index.html) is a familiar practice on cloud platforms like AWS, GCP, and Azure. [Cloud image](https://cloud-images.ubuntu.com/) and [cloud-init](https://cloudinit.readthedocs.io/en/latest/index.html) are not just for cloud providers, it can be deployed in KVM to spin up a virtual machine instantly without guest os installation.
 
-The goal is to create a VM instance in KVM with [cloud image](https://cloud-images.ubuntu.com/) and [cloud-init](https://cloudinit.readthedocs.io/en/latest/index.html).
+The goal is to create a jenkins instance in KVM with [cloud image](https://cloud-images.ubuntu.com/) and [cloud-init](https://cloudinit.readthedocs.io/en/latest/index.html).
 
 
 
 ### Prerequisites
 
-[Installed KVM and libvirt](https://github.com/tankibaj/docs/blob/master/KVM-Ubuntu1804.md)
+[Installed KVM and libvirt](https://thenaim.com/posts/kvm-ubuntu/)
 
 
 
@@ -32,16 +32,10 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
   nano network-config.yml
   ```
 
-- ###### Spin up Ubuntu 20.04 VM
+- ###### Spin up jenkins instance
 
   ```bash
-  bash CreateInstance.sh ubuntu-instance ubuntu 20 5902
-  ```
-  
-  - ###### Spin up Debian 10 VM
-
-  ```bash
-  bash CreateInstance.sh debian-instance debian 20 5903
+  bash run.sh
   ```
 
  

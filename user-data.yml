@@ -7,7 +7,7 @@ timezone: Europe/Berlin
 manage_etc_hosts: true
 
 # |- Update hostname and fqdn
-hostname: cloudinit
+hostname: jenkins
 #fqdn: web01.example.com
 
 # |- Configure apt for the user
@@ -28,6 +28,7 @@ packages:
     - git
     - curl
     - unzip
+    - openjdk-11-jdk
 
 # |- Can easily be imported into the configured user. This can be a single string ('user') or a list ([user1, user2])
 # ssh_import_id: [user1, user2]
@@ -52,21 +53,47 @@ runcmd:
   - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
   - sed -i -e '$aAllowUsers naim' /etc/ssh/sshd_config
   - restart ssh
-  - [ wget, "https://raw.githubusercontent.com/tankibaj/dotfiles-ubuntu/master/install.sh", -O, /home/naim/dotfiles-installer.sh ]
+  - wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | apt-key add -
+  - bash -c 'echo deb https://pkg.jenkins.io/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
+  - apt-get update
+  - apt-get install -y jenkins
+  - systemctl start jenkins
+  - usermod -aG root jenkins
+  - sed -i 's|HTTP_PORT=8080|HTTP_PORT=80|g' /etc/default/jenkins
+  - systemctl restart jenkins
+  - fallocate -l 3G /swapfile
+  - chmod 600 /swapfile
+  - mkswap /swapfile
+  - swapon /swapfile
+  - sh -c 'echo "/swapfile   none    swap    sw    0   0" | tee /etc/fstab -a'
+  - [ wget, "https://raw.githubusercontent.com/tankibaj/dotfiles-ubuntu/main/install.sh", -O, /home/naim/dotfiles.sh ]
 
 # |- Set user passwords
 chpasswd:
   list: |
-    naim:123123
-    root:123123
+    naim:6969
+    root:6969
   expire: false
 
 # |- Write arbitrary files
 write_files:
-  - path: home/naim/hello.txt
+  - path: home/naim/jenkins-status.sh
     content: |
-      The system is finally up!!!
-      Hello World!!!!
+      java -version
+      echo
+      echo
+      echo
+      sudo systemctl status jenkins | grep Active
+      echo
+      echo
+      echo 'Initial Admin Password:'
+      sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+      echo
+      echo
+      swapon --show
+      echo
+      echo
+
 
 # |- Output final message when cloud-init has finished
 final_message: "The system is finally up, after $UPTIME seconds"
