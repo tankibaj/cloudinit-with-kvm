@@ -12,4 +12,4 @@ Commands::
     # Virtual machine configuration
     $ nano CreateInstance.sh
     # Snip Up VM
-    $ bash CreateInstance.sh
+    $ bash run.sh
