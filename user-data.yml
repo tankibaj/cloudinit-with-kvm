@@ -59,7 +59,6 @@ runcmd:
   - apt-get install -y jenkins
   - systemctl start jenkins
   - usermod -aG root jenkins
-  - sed -i 's|HTTP_PORT=8080|HTTP_PORT=80|g' /etc/default/jenkins
   - systemctl restart jenkins
   - fallocate -l 3G /swapfile
   - chmod 600 /swapfile
