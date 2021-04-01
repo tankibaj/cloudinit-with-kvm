@@ -6,17 +6,32 @@ set -o pipefail
 set -o nounset
 
 # Check for arguments
-if [ $# = 4 ]; then
-    VM_NAME=$1
-    os=$2
-    DISK_SIZE=$3G
-    VNC_PORT=$4
-else
-    echo
-    echo "Usage: $0 VMname OSname DiskSize VNCPort"
-    echo
-    echo "Example: bash $0 instance1 ubuntu 20 5901"
-    exit 1
+# if [ $# = 4 ]; then
+#     VM_NAME=$1
+#     os=$2
+#     DISK_SIZE=$3G
+#     VNC_PORT=$4
+# else
+#     echo
+#     echo "Usage: $0 VMname OSname DiskSize VNCPort"
+#     echo
+#     echo "Example: bash $0 instance1 ubuntu 20 5901"
+#     exit 1
+# fi
+
+VM_NAME="vGateway"
+os="ubuntu"
+DISK_SIZE="10G"
+VNC_PORT=5901
+
+# Check for cloud-image-utils and install if don't have it
+if test ! $(which cloud-localds); then
+    sudo apt-get -y install cloud-image-utils
+fi
+
+# Check for net-tools and install if don't have it
+if test ! $(which netstat); then
+    sudo apt-get -y install net-tools
 fi
 
 # Check port availability
@@ -28,9 +43,7 @@ fi
 if [ -n $os ]; then
     case $os in
     ubuntu | Ubuntu)
-        # IMG_URL=https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img
-        # IMG_PATH=/var/lib/libvirt/images/bionic-server-cloudimg-amd64.img
-        IMG_URL=https://cloud-images.ubuntu.com/bionic/current/focal-server-cloudimg-amd64.img
+        IMG_URL=https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
         IMG_PATH=/var/lib/libvirt/images/focal-server-cloudimg-amd64.img
         ;;
     debian | Debian)
@@ -64,11 +77,9 @@ if [ -e /var/lib/libvirt/images/${VM_NAME}-seed.qcow2 ]; then
     rm -rfv /var/lib/libvirt/images/${VM_NAME}-seed.qcow2
 fi
 
-
 if [ ! "qcow2" = $(qemu-img info ${IMG_PATH} | grep 'file format' | cut -d ':' -f 2) ]; then
-echo "Image format is not supported!"
+    echo "Image format is not supported!"
 fi
-
 
 # # Create disk image
 # qemu-img create -F qcow2 -b ${IMG_PATH} -f qcow2 /var/lib/libvirt/images/${VM_NAME}.qcow2 ${DISK_SIZE}
@@ -82,7 +93,6 @@ qemu-img resize /var/lib/libvirt/images/${VM_NAME}.qcow2 ${DISK_SIZE}
 
 # Create seed image and injecting network-config, user-data and meta-data
 cloud-localds -v -N network-config.yml /var/lib/libvirt/images/${VM_NAME}-seed.qcow2 user-data.yml
-
 
 cat >${VM_NAME}.xml <<EOF
 <domain type='kvm'>

@@ -7,7 +7,7 @@ timezone: Europe/Berlin
 manage_etc_hosts: true
 
 # |- Update hostname and fqdn
-hostname: cloudinit
+hostname: vGateway
 #fqdn: web01.example.com
 
 # |- Configure apt for the user
@@ -43,8 +43,16 @@ users:
     ssh-authorized-keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDkWco4WiGFw9/q9I6EWLyX58o0g9h4GaIA0unAqktMgybU4bWmZ/59LynImJtbxK46kprLE/lcew7jpX2p9iS+WKro13NmlfxzRXCXufMu8zuuR8od+dcBCagHypVo7r00/4seakdc6i/DCPDAl8RcBMsR15ZWa+pwQiHFIHUnBXOaBGH8v/UuLhcw7IzdXi2juhIQ8vrn3XFYGtmACnE+/lweE5bys/ynqp+ezINUmaqtpAGaJqNT5Skwy9DelbUkxOuvliIC2vBMj7Hjb8XGUSbgFKznCEsMwKkdEDgg5pAHFwJRAN7EQ6IPg7pMloNs4GzqtWGfV3Wa9ZXgCl+RCZ7AN7Ng0mVdOhtwkxh5oa3T+U7JNhWEMmvKt4iK2t1sk+upl3lS12CXcQd8YIPuwjZ9kpYdrDQtPkKgZLWKP5gbRwwMc8Qh5TP4jePo8s0M8qff0E/vC2fNaWNAEis5Bk43skG72T4jpveqLRONNV5l3URb92XJNJaTItrVW6xFzcG2XPVSqyHFeNKT0wBmalfbDQ0llZoTbL9VOua4aXd3KJc23XsPN12e1iK8n5tBB2IiZAF4aNzhyGo3jngB9nsjHL/HrlZ9RuBA96YOFWUtnemaIDGphJuTJ3tclfD9uL9h5r8nQiwrSssumV/p/5ZtWvoxJvFN9OTOs9K0Jw== mail@thenaim.com
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
-    groups: sudo, adm, docker
+    groups: sudo, adm
     shell: /bin/bash
+
+
+# |- Write arbitrary files
+write_files:
+  - path: /home/naim/.ovpnauth
+    content: |
+      user
+      password
 
 # |- Run arbitrary commands. Each item can be either a list or a string. All commands must be proper yaml
 runcmd:
@@ -52,28 +60,16 @@ runcmd:
   - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
   - sed -i -e '$aAllowUsers naim' /etc/ssh/sshd_config
   - restart ssh
-  - [ wget, "https://raw.githubusercontent.com/tankibaj/dotfiles-ubuntu/master/install.sh", -O, /home/naim/dotfiles-installer.sh ]
+  - [ wget, "https://raw.githubusercontent.com/tankibaj/dotfiles-ubuntu/main/install.sh", -O, /home/naim/dotfiles.sh ]
+  - [ wget, "https://raw.githubusercontent.com/tankibaj/public-files/main/openvpnGateway/de-profile.ovpn", -O, /home/naim/profile.ovpn ]
+  - [ bash, -c, 'curl -sSL https://raw.githubusercontent.com/tankibaj/public-files/main/openvpnGateway/setup_gateway.sh | bash' ]
 
-# |- Set user passwords
+  # |- Set user passwords
 chpasswd:
   list: |
-    naim:123123
-    root:123123
+    naim:6969
+    root:6969
   expire: false
-
-# |- Write arbitrary files
-write_files:
-  - path: home/naim/hello.txt
-    content: |
-      The system is finally up!!!
-      Hello World!!!!
 
 # |- Output final message when cloud-init has finished
 final_message: "The system is finally up, after $UPTIME seconds"
-
-# |-  Shutdown/reboot after all config modules have been run
-power_state:
-    delay: now
-    mode: reboot
-    message: First reboot
-    condition: true
