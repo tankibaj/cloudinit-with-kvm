@@ -14,12 +14,6 @@ The goal is to create a jenkins instance in KVM with [cloud image](https://cloud
 
 ### Getting started
 
-- ###### Update and install cloud image utils
-
-  ```bash
-  sudo apt update && sudo apt install -y cloud-image-utils
-  ```
-
 - ###### Cloud-Init configuration
 
   ```bash
@@ -35,7 +29,7 @@ The goal is to create a jenkins instance in KVM with [cloud image](https://cloud
 - ###### Spin up jenkins instance
 
   ```bash
-  bash run.sh
+  ./build.sh
   ```
 
  
