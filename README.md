@@ -15,29 +15,29 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
 ### Getting started
 
 
-- ###### Cloud-Init configuration
+- ##### Cloud-Init configuration
 
   ```bash
   nano user-data.yml
   ```
 
-- ###### Network configuration
+- ##### Network configuration
 
   ```bash
   nano network-config.yml
   ```
 
-- ###### Spin up Ubuntu 20.04 VM
+- ##### Spin up Ubuntu 20.04 VM
 
-  Usage: ./build.sh VMname OSname DiskSize VNCPort
+  `Usage: ./build.sh VMname OSname DiskSize VNCPort`
 
   ```bash
   ./build.sh ubuntu-instance ubuntu 20 5902
   ```
   
-  - ###### Spin up Debian 10 VM
+  - ##### Spin up Debian 10 VM
 
-  Usage: ./build.sh VMname OSname DiskSize VNCPort
+  `Usage: ./build.sh VMname OSname DiskSize VNCPort`
 
   ```bash
   ./build.sh debian-instance debian 20 5903
