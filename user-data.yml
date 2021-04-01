@@ -7,7 +7,7 @@ timezone: Europe/Berlin
 manage_etc_hosts: true
 
 # |- Update hostname and fqdn
-hostname: cloudinit
+hostname: docker
 #fqdn: web01.example.com
 
 # |- Configure apt for the user
@@ -52,21 +52,25 @@ runcmd:
   - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
   - sed -i -e '$aAllowUsers naim' /etc/ssh/sshd_config
   - restart ssh
-  - [ wget, "https://raw.githubusercontent.com/tankibaj/dotfiles-ubuntu/master/install.sh", -O, /home/naim/dotfiles-installer.sh ]
+  - [ wget, "https://raw.githubusercontent.com/tankibaj/dotfiles-ubuntu/main/install.sh", -O, /home/naim/dotfiles.sh ]
+  - [ bash, -c, 'curl -sSL https://get.docker.com | bash' ]
+  - [ bash, -c, 'sudo curl -L https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep "tag_name" | cut -d \" -f4)/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose' ]
+  - [ bash, -c, 'sudo chmod +x /usr/local/bin/docker-compose' ]
+  - [ su -s '/home/naim/dotfiles.sh' naim ]
 
 # |- Set user passwords
 chpasswd:
   list: |
-    naim:123123
-    root:123123
+    naim:6969
+    root:6969
   expire: false
 
 # |- Write arbitrary files
-write_files:
-  - path: home/naim/hello.txt
-    content: |
-      The system is finally up!!!
-      Hello World!!!!
+# write_files:
+#   - path: home/naim/hello.txt
+#     content: |
+#       The system is finally up!!!
+#       Hello World!!!!
 
 # |- Output final message when cloud-init has finished
 final_message: "The system is finally up, after $UPTIME seconds"

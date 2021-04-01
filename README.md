@@ -8,19 +8,13 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
 
 ### Prerequisites
 
-[Installed KVM and libvirt](https://github.com/tankibaj/docs/blob/master/KVM-Ubuntu1804.md)
+[Installed KVM and libvirt](https://thenaim.com/posts/kvm-ubuntu/)
 
 
 
 ### Getting started
 
-- ###### Update and install cloud image utils
-
-  ```bash
-  sudo apt update && sudo apt install -y cloud-image-utils
-  ```
-
-- ###### Cloud-Init configuration
+- ###### Cloudinit configuration
 
   ```bash
   nano user-data.yml
@@ -35,13 +29,7 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
 - ###### Spin up Ubuntu 20.04 VM
 
   ```bash
-  bash CreateInstance.sh ubuntu-instance ubuntu 20 5902
-  ```
-  
-  - ###### Spin up Debian 10 VM
-
-  ```bash
-  bash CreateInstance.sh debian-instance debian 20 5903
+  ./build.sh
   ```
 
  
