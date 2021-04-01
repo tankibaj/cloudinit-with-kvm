@@ -14,13 +14,7 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
 
 ### Getting started
 
-- ###### Update and install cloud image utils
-
-  ```bash
-  sudo apt update && sudo apt install -y cloud-image-utils
-  ```
-
-- ###### Cloud-init configuration
+- ###### Cloudinit configuration
 
   ```bash
   nano user-data.yml
