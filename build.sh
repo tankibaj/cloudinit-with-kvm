@@ -15,7 +15,7 @@ else
     echo
     echo "Usage: $0 VMname OSname DiskSize VNCPort"
     echo
-    echo "Example: bash $0 instance1 ubuntu 20 5901"
+    echo "Example: ./$0 instance1 ubuntu 20 5901"
     exit 1
 fi
 

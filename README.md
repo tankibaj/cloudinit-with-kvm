@@ -29,14 +29,18 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
 
 - ###### Spin up Ubuntu 20.04 VM
 
+  Usage: ./build.sh VMname OSname DiskSize VNCPort
+
   ```bash
-  bash CreateInstance.sh ubuntu-instance ubuntu 20 5902
+  ./build.sh ubuntu-instance ubuntu 20 5902
   ```
   
   - ###### Spin up Debian 10 VM
 
+  Usage: ./build.sh VMname OSname DiskSize VNCPort
+
   ```bash
-  bash CreateInstance.sh debian-instance debian 20 5903
+  ./build.sh debian-instance debian 20 5903
   ```
 
  
