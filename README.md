@@ -20,7 +20,7 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
   sudo apt update && sudo apt install -y cloud-image-utils
   ```
 
-- ###### Cloud-Init configuration
+- ###### Cloud-init configuration
 
   ```bash
   nano user-data.yml
@@ -32,16 +32,10 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
   nano network-config.yml
   ```
 
-- ###### Spin up Ubuntu 20.04 VM
+- ###### Spin up vGateway
 
   ```bash
-  bash CreateInstance.sh ubuntu-instance ubuntu 20 5902
-  ```
-  
-  - ###### Spin up Debian 10 VM
-
-  ```bash
-  bash CreateInstance.sh debian-instance debian 20 5903
+  ./build.sh
   ```
 
  
