@@ -1,0 +1,93 @@
+#cloud-config
+
+# |- Set timezone 
+timezone: Europe/Berlin
+
+# |- Update /etc/hosts
+manage_etc_hosts: true
+
+# |- Update hostname and fqdn
+hostname: k8s-worker-01
+#fqdn: web01.example.com
+
+# |- Configure apt for the user
+# apt_sources:
+#  - source: "ppa:smoser/ppa"
+
+# |-Update apt database on first boot | Default: true
+#apt_update: true
+package_update: true
+
+# |- Upgrade the instance on first boot | Default: false
+#apt_upgrade: true
+package_upgrade: false
+
+# |- Install additioanl packages on first boot | Default: non
+packages:
+    - htop
+    - git
+    - curl
+    - unzip
+
+# |- Can easily be imported into the configured user. This can be a single string ('user') or a list ([user1, user2])
+# ssh_import_id: [user1, user2]
+
+# |- Add each entry to ~/.ssh/authorized_keys for the configured user
+# ssh-authorized-keys:
+#   - ssh-rsa AAAAB3NzaC1y
+#   - ssh-rsa AAAAB3NzaC1y
+
+# |- Configure users and groups
+users:
+  - name: naim
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDkWco4WiGFw9/q9I6EWLyX58o0g9h4GaIA0unAqktMgybU4bWmZ/59LynImJtbxK46kprLE/lcew7jpX2p9iS+WKro13NmlfxzRXCXufMu8zuuR8od+dcBCagHypVo7r00/4seakdc6i/DCPDAl8RcBMsR15ZWa+pwQiHFIHUnBXOaBGH8v/UuLhcw7IzdXi2juhIQ8vrn3XFYGtmACnE+/lweE5bys/ynqp+ezINUmaqtpAGaJqNT5Skwy9DelbUkxOuvliIC2vBMj7Hjb8XGUSbgFKznCEsMwKkdEDgg5pAHFwJRAN7EQ6IPg7pMloNs4GzqtWGfV3Wa9ZXgCl+RCZ7AN7Ng0mVdOhtwkxh5oa3T+U7JNhWEMmvKt4iK2t1sk+upl3lS12CXcQd8YIPuwjZ9kpYdrDQtPkKgZLWKP5gbRwwMc8Qh5TP4jePo8s0M8qff0E/vC2fNaWNAEis5Bk43skG72T4jpveqLRONNV5l3URb92XJNJaTItrVW6xFzcG2XPVSqyHFeNKT0wBmalfbDQ0llZoTbL9VOua4aXd3KJc23XsPN12e1iK8n5tBB2IiZAF4aNzhyGo3jngB9nsjHL/HrlZ9RuBA96YOFWUtnemaIDGphJuTJ3tclfD9uL9h5r8nQiwrSssumV/p/5ZtWvoxJvFN9OTOs9K0Jw== mail@thenaim.com
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    groups: sudo, adm, docker
+    shell: /bin/bash
+
+# |- Run arbitrary commands. Each item can be either a list or a string. All commands must be proper yaml
+runcmd:
+  - chown -R naim:naim /home/naim/
+  - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+  - sed -i -e '$aAllowUsers naim' /etc/ssh/sshd_config
+  - restart ssh
+  - [ wget, "https://raw.githubusercontent.com/tankibaj/dotfiles-ubuntu/main/install.sh", -O, /home/naim/dotfiles.sh ]
+  # - [ bash, -c, 'curl -sSL https://get.docker.com | bash' ]
+  # - [ bash, -c, 'sudo curl -L https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep "tag_name" | cut -d \" -f4)/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose' ]
+  # - [ bash, -c, 'sudo chmod +x /usr/local/bin/docker-compose' ]
+  - echo "net.bridge.bridge-nf-call-ip6tables = 1" >> /etc/sysctl.d/kubernetes.conf
+  - echo "net.bridge.bridge-nf-call-iptables = 1" >> /etc/sysctl.d/kubernetes.conf
+  - sysctl --system
+  - apt install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+  - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - apt update
+  - apt install -y docker-ce=5:19.03.10~3-0~ubuntu-focal containerd.io
+  - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+  - echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
+  - apt update && apt install -y kubeadm=1.18.5-00 kubelet=1.18.5-00 kubectl=1.18.5-00
+
+# |- Set user passwords
+chpasswd:
+  list: |
+    naim:6969
+    root:6969
+  expire: false
+
+# |- Write arbitrary files
+# write_files:
+#   - path: home/naim/hello.txt
+#     content: |
+#       The system is finally up!!!
+#       Hello World!!!!
+
+# |- Output final message when cloud-init has finished
+final_message: "The system is finally up, after $UPTIME seconds"
+
+# |-  Shutdown/reboot after all config modules have been run
+power_state:
+    delay: now
+    mode: reboot
+    message: First reboot
+    condition: true

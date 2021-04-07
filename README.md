@@ -14,16 +14,11 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
 
 ### Getting started
 
-- ###### Cloudinit configuration
-
-  ```bash
-  nano user-data.yml
-  ```
-
 - ###### Network configuration
 
   ```bash
-  nano network-config.yml
+  nano master/network-config.yml
+  nano worker/network-config.yml
   ```
 
 - ###### Spin up Ubuntu 20.04 VM

@@ -7,7 +7,7 @@ timezone: Europe/Berlin
 manage_etc_hosts: true
 
 # |- Update hostname and fqdn
-hostname: docker
+hostname: k8s-master
 #fqdn: web01.example.com
 
 # |- Configure apt for the user
@@ -53,9 +53,23 @@ runcmd:
   - sed -i -e '$aAllowUsers naim' /etc/ssh/sshd_config
   - restart ssh
   - [ wget, "https://raw.githubusercontent.com/tankibaj/dotfiles-ubuntu/main/install.sh", -O, /home/naim/dotfiles.sh ]
-  - [ bash, -c, 'curl -sSL https://get.docker.com | bash' ]
-  - [ bash, -c, 'sudo curl -L https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep "tag_name" | cut -d \" -f4)/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose' ]
-  - [ bash, -c, 'sudo chmod +x /usr/local/bin/docker-compose' ]
+  # - [ bash, -c, 'curl -sSL https://get.docker.com | bash' ]
+  # - [ bash, -c, 'sudo curl -L https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep "tag_name" | cut -d \" -f4)/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose' ]
+  # - [ bash, -c, 'sudo chmod +x /usr/local/bin/docker-compose' ]
+  - echo "net.bridge.bridge-nf-call-ip6tables = 1" >> /etc/sysctl.d/kubernetes.conf
+  - echo "net.bridge.bridge-nf-call-iptables = 1" >> /etc/sysctl.d/kubernetes.conf
+  - sysctl --system
+  - apt install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+  - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - apt update
+  - apt install -y docker-ce=5:19.03.10~3-0~ubuntu-focal containerd.io
+  - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+  - echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
+  - apt update && apt install -y kubeadm=1.18.5-00 kubelet=1.18.5-00 kubectl=1.18.5-00
+  - kubeadm init --apiserver-advertise-address=192.168.0.14 --pod-network-cidr=172.16.0.0/16  --ignore-preflight-errors=all
+  - kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+  - kubeadm token create --print-join-command >> /home/naim/kubeadm.token
 
 # |- Set user passwords
 chpasswd:
