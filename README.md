@@ -26,15 +26,17 @@ This repo guides you in setting up a kubernetes cluster with a master and worker
 - #### Master node
 
   ```bash
-cd master
-./build.sh
+  cd master
+  ./build.sh
   ```
+
+
 
 - #### Worker node
 
   ```bash
-cd worker &&\
-./build.sh
+  cd worker &&\
+  ./build.sh
   ```
 
 - #### Join the cluster
