@@ -9,7 +9,7 @@ set -o nounset
 VM_NAME="k8s-worker"
 os="ubuntu"
 DISK_SIZE=20G
-VNC_PORT=5904
+VNC_PORT=5905
 
 # Check for cloud-image-utils and install if don't have it
 if test ! $(which cloud-localds); then

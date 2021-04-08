@@ -1,8 +1,10 @@
+## Kubernetes Cluster using kubeadm
+
+This repo guides you in setting up a kubernetes cluster with a master and worker node on Ubuntu 20.04 LTS.
 
 
-Spin up a virtual machine instance in a few seconds with [cloud image](https://cloud-images.ubuntu.com/) and [cloud-init](https://cloudinit.readthedocs.io/en/latest/index.html) is a familiar practice on cloud platforms like AWS, GCP, and Azure. [Cloud image](https://cloud-images.ubuntu.com/) and [cloud-init](https://cloudinit.readthedocs.io/en/latest/index.html) are not just for cloud providers, it can be deployed in KVM to spin up a virtual machine instantly without guest os installation.
 
-The goal is to create a VM instance in KVM with [cloud image](https://cloud-images.ubuntu.com/) and [cloud-init](https://cloudinit.readthedocs.io/en/latest/index.html).
+
 
 
 
@@ -14,23 +16,49 @@ The goal is to create a VM instance in KVM with [cloud image](https://cloud-imag
 
 ### Getting started
 
-- ###### Network configuration
+- #### Network configuration
 
   ```bash
   nano master/network-config.yml
   nano worker/network-config.yml
   ```
 
-- ###### Spin up Ubuntu 20.04 VM
+- #### Master node
 
   ```bash
-  ./build.sh
+cd master
+./build.sh
   ```
 
- 
+- #### Worker node
+
+  ```bash
+cd worker &&\
+./build.sh
+  ```
+
+- #### Join the cluster
+
+  - Step1: Login to master node from terminal then run `cat kubeadm.token` and copy output.
+  - Step2: Login to worker node from terminal paste copied token from master node and hit enter.
+
+- #### kubectl
+
+  - Dowload [kubectl](https://kubernetes.io/docs/tasks/tools/)
+
+  - Copy `/etc/kubernetes/admin.conf` from master node and put into following path `~/.kube/config` of your local pc
+
+    ```bash
+    scp root@192.168.0.14:/etc/kubernetes/admin.conf ~/.kube/config
+    ```
+
+    
+
+
 
 ### Resource
 
 - [An Introduction to Cloud-Config Scripting](https://www.digitalocean.com/community/tutorials/an-introduction-to-cloud-config-scripting)
 - [Cloud-init Documentation](https://cloudinit.readthedocs.io/en/latest/)
 - [Ubuntu Cloud Images](https://cloud-images.ubuntu.com/)
+
